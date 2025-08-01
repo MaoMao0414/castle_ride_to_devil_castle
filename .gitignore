@@ -1,0 +1,42 @@
+# Python/Django
+*.pyc
+__pycache__/
+db.sqlite3
+.env
+*.env
+venv/
+env/
+.idea/
+.DS_Store
+*.log
+*.sqlite3
+# Django migrations
+**/migrations/**/ __pycache__/
+**/migrations/**/ *.pyc
+**/migrations/**/ *.pyo
+
+# Node/Vue
+node_modules/
+dist/
+magic-coach-frontend/node_modules/
+magic-coach-frontend/dist/
+magic-coach-frontend/.env
+magic-coach-frontend/src/components/HelloWorld.vue
+magic-coach-frontend/.gitignore
+
+# VSCode/編輯器
+.vscode/
+*.swp
+*~
+# Mac/Linux/Windows 隱藏檔
+.DS_Store
+Thumbs.db
+
+# 其他
+backend/.env
+backend/db.sqlite3
+*.sqlite3
+
+*.sh
+
+.gitignore
