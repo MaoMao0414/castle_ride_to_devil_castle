@@ -43,10 +43,12 @@
           <span v-if="p.id == playerId" class="me">(我)</span>
           <!-- 踢人按鈕：只顯示給 idle 玩家、不是自己 -->
           <button
-            v-if="p.idle && p.id != playerId"
+            v-if="(p.idle && p.id != playerId) || (playerId == ownerId && p.id != playerId)"
             @click="kickPlayer(p.id)"
-            style="margin-left:12px;background:#888;"
-          >踢除離線玩家</button>
+            style="margin-left:12px; background: #d55;"
+          >
+            踢除玩家
+          </button>
           <!-- 其餘權限按鈕不動 -->
           <template v-if="playerId == ownerId && p.id != playerId">
             <button @click="transferOwner(p.id)">轉移房主</button>

@@ -197,14 +197,25 @@ def kick_player(request):
         data = json.loads(request.body)
         room_code = data.get('room_code')
         target_player_id = data.get('target_player_id')
+        requester_id = data.get('owner_id')  # 加一個欄位代表發出請求者id
+
         try:
             room = Room.objects.get(room_code=room_code)
             player = room.players.get(id=target_player_id)
+
             from datetime import timedelta
             from django.utils import timezone
-            if (timezone.now() - player.last_active) <= timedelta(seconds=10):
-                return JsonResponse({'status': 'error', 'message': '只能踢離線/暫離玩家'}, status=403)
+            is_idle = (timezone.now() - player.last_active) > timedelta(seconds=10)
+
+            # 若玩家在線（非idle），必須是房主才能踢
+            if not is_idle:
+                if requester_id != room.owner_id:
+                    return JsonResponse({'status': 'error', 'message': '只能由房主踢在線玩家'}, status=403)
+
+            # 允許踢除
             player.delete()
+
+            # 如果被踢的是房主，自動轉移房主
             if room.owner_id == target_player_id:
                 new_owner = room.players.order_by('join_time').first()
                 if new_owner:
@@ -212,9 +223,12 @@ def kick_player(request):
                     room.save()
                 else:
                     room.delete()
+
             return JsonResponse({'status': 'ok'})
+
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
+
 
 @csrf_exempt
 def transfer_owner(request):
