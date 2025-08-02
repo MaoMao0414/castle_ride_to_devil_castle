@@ -142,7 +142,14 @@ export default {
           if (!this.players.some(p => p.id === this.playerId)) {
             localStorage.removeItem('playerId');
             this.$router.push('/');
+            return; // 這裡直接 return，後面就不再判斷
           }
+          // === 新增區塊：自動跳轉到遊戲頁面 ===
+          if (this.started) {
+            this.$router.push(`/game/${this.roomCode}`);
+            return; // 跳轉後不再執行下面
+          }
+          // === 新增區塊結束 ===
         } else if (data.message === '房間不存在') {
           localStorage.removeItem('playerId');
           this.$router.push('/');
@@ -326,7 +333,8 @@ export default {
     window.removeEventListener('beforeunload', this.handleBeforeUnload);
   },
   beforeRouteLeave(to, from, next) {
-    if (this.playerId) {
+    // 只有離開到「非遊戲頁」才呼叫 leave_room
+    if (this.playerId && !to.path.startsWith(`/game/`)) {
       fetch(`${API_BASE}/leave/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
